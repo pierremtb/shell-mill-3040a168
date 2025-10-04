@@ -1,6 +1,10 @@
 @settings(defaultLengthUnit = in)
 
-yRel008 = -0.00364214 // from freecad's solver
+millLength = 1
+arborDiameter = .5
+arborOffset = .625
+// from freecad's solver
+yRel008 = -0.00364214
 xRel008 = 0.027
 len001 = 0.063
 yRel007 = -0.014
@@ -30,10 +34,24 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> tangentialArc(end = [xRel008, yRel008])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = -1, twistAngle = -360 / 8)
+extrude001 = extrude(profile001, length = -millLength, twistAngle = -360 / 8)
 pattern001 = patternCircular3d(
   extrude001,
   instances = 8,
   axis = Z,
   center = [0, 0, 0],
 )
+
+// not working
+// solid001 = union([pattern001])
+
+plane001 = offsetPlane(XY, offset = -arborOffset)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.36)
+extrude002 = extrude(profile002, length = -arborDiameter)
+
+sketch003 = startSketchOn(extrude002, face = END)
+profile003 = circle(sketch003, center = [0, 0], radius = 0.25)
+extrude003 = extrude(profile003, length = millLength)
+
+solid001 = subtract(pattern001, tools = extrude003)
