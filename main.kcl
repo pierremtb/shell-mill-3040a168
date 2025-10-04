@@ -1,8 +1,11 @@
 @settings(defaultLengthUnit = in)
 
+slotDepth = 0.1
+slotWidth = 0.21
 millLength = 1
 arborDiameter = .5
 arborOffset = .625
+
 // from freecad's solver
 yRel008 = -0.00364214
 xRel008 = 0.027
@@ -21,8 +24,8 @@ yRel002 = 0.069
 xRel002 = 0.116
 yRel001 = .537
 xRel001 = 0.035
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
+toothSketch = startSketchOn(XY)
+toothProfile = startProfile(toothSketch, at = [0, 0])
   |> line(end = [xRel001, yRel001])
   |> line(end = [xRel002, yRel002])
   |> line(end = [xRel003, yRel003])
@@ -34,24 +37,37 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> tangentialArc(end = [xRel008, yRel008])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = -millLength, twistAngle = -360 / 8)
-pattern001 = patternCircular3d(
-  extrude001,
+tooth = extrude(toothProfile, length = -millLength, twistAngle = -360 / 8)
+
+// not working
+// solid001 = union([pattern001])
+
+allTeeth = patternCircular3d(
+  tooth,
   instances = 8,
   axis = Z,
   center = [0, 0, 0],
 )
 
-// not working
-// solid001 = union([pattern001])
+elbowPlane = offsetPlane(XY, offset = -arborOffset)
+arborOppositeSketch = startSketchOn(elbowPlane)
+arborOppositeProfile = circle(arborOppositeSketch, center = [0, 0], radius = 0.36)
 
-plane001 = offsetPlane(XY, offset = -arborOffset)
-sketch002 = startSketchOn(plane001)
-profile002 = circle(sketch002, center = [0, 0], radius = 0.36)
-extrude002 = extrude(profile002, length = -arborDiameter)
+arborOppositeHole = extrude(arborOppositeProfile, length = -arborDiameter)
+arborSketch = startSketchOn(arborOppositeHole, face = END)
+arborProfile = circle(arborSketch, center = [0, 0], radius = 0.25)
 
-sketch003 = startSketchOn(extrude002, face = END)
-profile003 = circle(sketch003, center = [0, 0], radius = 0.25)
-extrude003 = extrude(profile003, length = millLength)
+arborHole = extrude(arborProfile, length = millLength)
 
-solid001 = subtract(pattern001, tools = extrude003)
+slotSketch = startSketchOn(YZ)
+slotProfile = startProfile(slotSketch, at = [0, slotDepth])
+  |> xLine(length = slotWidth / 2)
+  |> yLine(length = -slotDepth * 2)
+  |> xLine(length = -slotWidth)
+  |> yLine(length = slotDepth * 2)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+slot = extrude(slotProfile, length = millLength, bidirectionalLength = millLength)
+
+cutters = union([arborHole, slot])
+solid001 = subtract(allTeeth, tools = [cutters])
