@@ -1,35 +1,33 @@
 @settings(defaultLengthUnit = in)
 
-yRel008 = -0.004
-xRel010 = 0.027
+yRel008 = -0.00364214 // from freecad's solver
+xRel008 = 0.027
 len001 = 0.063
 yRel007 = -0.014
-xRel009 = 0.088
-xRel008 = 0.048
+xRel007 = 0.088
 yRel006 = -0.058
-xRel007 = 0.048
-xRel006 = -0.041
+xRel006 = 0.048
 yRel005 = -0.1
+xRel005 = -0.041
 yRel004 = -0.038
-xRel005 = 0.055
 xRel004 = 0.055
 yRel003 = -0.006
 xRel003 = 0.022
 yRel002 = 0.069
 xRel002 = 0.116
-xRel001 = 0.035
 yRel001 = .537
+xRel001 = 0.035
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [xRel001, yRel001])
   |> line(end = [xRel002, yRel002])
   |> line(end = [xRel003, yRel003])
-  |> line(end = [xRel005, yRel004])
-  |> line(end = [xRel006, yRel005])
-  |> tangentialArc(end = [xRel008, yRel006])
-  |> tangentialArc(end = [xRel009, yRel007], tag = $seg01)
+  |> line(end = [xRel004, yRel004])
+  |> line(end = [xRel005, yRel005])
+  |> tangentialArc(end = [xRel006, yRel006])
+  |> tangentialArc(end = [xRel007, yRel007], tag = $seg01)
   |> angledLine(angle = tangentToEnd(seg01), length = len001)
-  |> tangentialArc(end = [xRel010, yRel008])
+  |> tangentialArc(end = [xRel008, yRel008])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = -1, twistAngle = -360 / 8)
