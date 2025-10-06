@@ -6,9 +6,14 @@ millLength = 1
 arborDiameter = .5
 arborOffset = .625
 
-// adjusted by hand to get to a slice of 45deg (360 deg / 8 teeth)
-yRel008 = -0.003919794
-xRel008 = 0.02668365
+// polar coordinates for start and end to ensure 45 deg slice
+toothAngleStart = 90deg - 3.73deg
+toothLength = 0.54
+profileStart = polar(angle = toothAngleStart, length = toothLength)
+profileEnd = polar(angle = toothAngleStart - 45deg, length = toothLength)
+
+yRel008 = -0.004
+xRel008 = 0.027
 len001 = 0.063
 yRel007 = -0.014
 xRel007 = 0.088
@@ -25,10 +30,6 @@ xRel002 = 0.116
 yRel001 = .537
 xRel001 = 0.035
 toothSketch = startSketchOn(XY)
-toothAngleStart = 90deg - 3.73deg
-toothLength = 0.54
-profileStart = polar(angle = toothAngleStart, length = toothLength)
-profileEnd = polar(angle = toothAngleStart - 45, length = toothLength)
 toothProfile = startProfile(toothSketch, at = [0, 0])
   |> line(end = profileStart)
   |> line(end = [xRel002, yRel002])
