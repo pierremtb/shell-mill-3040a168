@@ -29,7 +29,8 @@ toothAngleStart = 90deg - 3.73deg
 toothLength = 0.54
 profileStart = polar(angle = toothAngleStart, length = toothLength)
 profileEnd = polar(angle = toothAngleStart - 45, length = toothLength)
-toothProfile = startProfile(toothSketch, at = profileStart)
+toothProfile = startProfile(toothSketch, at = [0, 0])
+  |> line(end = profileStart)
   |> line(end = [xRel002, yRel002])
   |> line(end = [xRel003, yRel003])
   |> line(end = [xRel004, yRel004])
@@ -39,5 +40,13 @@ toothProfile = startProfile(toothSketch, at = profileStart)
   |> angledLine(angle = tangentToEnd(seg01), length = len001)
   |> tangentialArc(end = [xRel008, yRel008])
   |> line(endAbsolute = profileEnd)
-  |> patternCircular2d(instances = 8, center = [0, 0])
-tooth = extrude(toothProfile, length = -millLength, twistAngle = -360 / 8)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(toothProfile, length = millLength)
+pattern001 = patternCircular3d(
+  extrude001,
+  instances = 8,
+  axis = Z,
+  center = [0, 0, 0],
+)
+solid001 = union(pattern001)
