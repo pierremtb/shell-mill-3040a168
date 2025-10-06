@@ -6,7 +6,7 @@ millLength = 1
 arborDiameter = .5
 arborOffset = .625
 
-// from freecad's solver
+// first value from freecad's solver to get to a slice of 45deg (360 deg / 8 teeth)
 yRel008 = -0.00364214
 xRel008 = 0.027
 len001 = 0.063
@@ -39,9 +39,6 @@ toothProfile = startProfile(toothSketch, at = [0, 0])
   |> close()
 tooth = extrude(toothProfile, length = -millLength, twistAngle = -360 / 8)
 
-// not working
-// solid001 = union([pattern001])
-
 allTeeth = patternCircular3d(
   tooth,
   instances = 8,
@@ -49,9 +46,12 @@ allTeeth = patternCircular3d(
   center = [0, 0, 0],
 )
 
+// not working
+// solid001 = union(allTeeth)
+
 elbowPlane = offsetPlane(XY, offset = -arborOffset)
 arborOppositeSketch = startSketchOn(elbowPlane)
-arborOppositeProfile = circle(arborOppositeSketch, center = [0, 0], radius = 0.36)
+arborOppositeProfile = circle(arborOppositeSketch, center = [0, 0], radius = arborDiameter / 2 * 1.5)
 
 arborOppositeHole = extrude(arborOppositeProfile, length = -arborDiameter)
 arborSketch = startSketchOn(arborOppositeHole, face = END)
