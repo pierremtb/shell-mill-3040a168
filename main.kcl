@@ -1,5 +1,19 @@
 @settings(defaultLengthUnit = in)
 
+yRel013 = -0.0218
+xRel013 = 0.0635
+len002 = 0.014
+xRel012 = 0.03
+yRel012 = -0.08
+yRel011 = -0.015
+xRel011 = 0.02
+yRel010 = -0.03
+xRel010 = 0.06
+xRel009 = 0.05
+yRel009 = 0.03
+angle001 = 68deg
+length002 = 0.14
+length001 = -0.15
 slotDepth = 0.1
 slotWidth = 0.21
 millLength = 1
@@ -13,17 +27,23 @@ len001 = 0.063
 yRel007 = -0.014
 xRel007 = 0.088
 yRel006 = -0.058
+
 xRel006 = 0.048
+
 yRel005 = -0.1
 xRel005 = -0.041
 yRel004 = -0.038
+
 xRel004 = 0.055
 yRel003 = -0.006
 xRel003 = 0.022
+
 yRel002 = 0.069
+
 xRel002 = 0.116
 yRel001 = .537
 xRel001 = 0.035
+
 toothSketch = startSketchOn(XY)
 toothProfile = startProfile(toothSketch, at = [0, 0])
   |> line(end = [xRel001, yRel001])
@@ -37,28 +57,23 @@ toothProfile = startProfile(toothSketch, at = [0, 0])
   |> tangentialArc(end = [xRel008, yRel008])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-tooth = extrude(toothProfile, length = -millLength, twistAngle = -360 / 8)
 
+  // not working
+// solid001 = union(allTeeth)
+tooth = extrude(toothProfile, length = -millLength, twistAngle = -360 / 8)
 allTeeth = patternCircular3d(
   tooth,
   instances = 8,
   axis = Z,
   center = [0, 0, 0],
 )
-
-// not working
-// solid001 = union(allTeeth)
-
 elbowPlane = offsetPlane(XY, offset = -arborOffset)
 arborOppositeSketch = startSketchOn(elbowPlane)
 arborOppositeProfile = circle(arborOppositeSketch, center = [0, 0], radius = arborDiameter / 2 * 1.5)
-
 arborOppositeHole = extrude(arborOppositeProfile, length = -arborDiameter)
 arborSketch = startSketchOn(arborOppositeHole, face = END)
 arborProfile = circle(arborSketch, center = [0, 0], radius = 0.25)
-
 arborHole = extrude(arborProfile, length = millLength)
-
 slotSketch = startSketchOn(YZ)
 slotProfile = startProfile(slotSketch, at = [0, slotDepth])
   |> xLine(length = slotWidth / 2)
@@ -71,3 +86,20 @@ slot = extrude(slotProfile, length = millLength, bidirectionalLength = millLengt
 
 cutters = union([arborHole, slot])
 solid001 = subtract(allTeeth, tools = [cutters])
+
+
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [length001, -1.5])
+  |> yLine(length = 0.5)
+  |> angledLine(angle = angle001, length = length002)
+  |> tangentialArc(end = [xRel009, yRel009])
+  |> tangentialArc(end = [xRel010, yRel010])
+  |> tangentialArc(end = [xRel011, yRel011])
+  |> tangentialArc(end = [xRel012, yRel012], tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), length = len002)
+  |> line(end = [xRel013, yRel013])
+  |> yLine(length = -.5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+toothCut = extrude(profile001, length = millLength)
+solid002 = subtract(solid001, tools = [toothCut])
